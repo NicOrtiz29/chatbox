@@ -1,0 +1,153 @@
+from fastapi import FastAPI, HTTPException, Depends
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from typing import List, Optional, Dict
+from openai import OpenAI
+import os
+import json
+from dotenv import load_dotenv
+
+# Cargar variables de entorno
+load_dotenv()
+
+app = FastAPI()
+
+# Configurar CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Configurar OpenAI
+api_key = os.getenv("OPENAI_API_KEY")
+if not api_key:
+    raise ValueError("No se encontró la API key de OpenAI. Por favor, configura OPENAI_API_KEY en el archivo .env")
+
+# Inicializar el cliente OpenAI con la configuración correcta
+client = OpenAI(
+    api_key=api_key,
+    base_url="https://api.openai.com/v1"
+)
+
+# Modelos de datos
+class EmpresaConfig(BaseModel):
+    empresaId: str
+    primaryColor: str
+    secondaryColor: str
+    width: str
+    height: str
+    position: str
+    welcomeMessage: str
+    buttonText: str
+    logo: str
+
+class Empresa(BaseModel):
+    nombre: str
+    dominio: str
+    config: EmpresaConfig
+
+class ChatMessage(BaseModel):
+    message: str
+    empresa_id: str
+
+# Archivo para almacenar las empresas
+EMPRESAS_FILE = "empresas.json"
+
+def cargar_empresas() -> Dict:
+    if os.path.exists(EMPRESAS_FILE):
+        with open(EMPRESAS_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return {}
+
+def guardar_empresas(empresas: Dict):
+    with open(EMPRESAS_FILE, 'w', encoding='utf-8') as f:
+        json.dump(empresas, f, ensure_ascii=False, indent=2)
+
+# Rutas de la API
+@app.get("/api/empresas")
+async def get_empresas():
+    return cargar_empresas()
+
+@app.post("/api/empresas")
+async def crear_empresa(empresa: Empresa):
+    empresas = cargar_empresas()
+    if empresa.config.empresaId in empresas:
+        raise HTTPException(status_code=400, detail="La empresa ya existe")
+    
+    empresas[empresa.config.empresaId] = empresa.dict()
+    guardar_empresas(empresas)
+    return empresa
+
+@app.put("/api/empresas/{empresa_id}")
+async def actualizar_empresa(empresa_id: str, empresa: Empresa):
+    empresas = cargar_empresas()
+    if empresa_id not in empresas:
+        raise HTTPException(status_code=404, detail="Empresa no encontrada")
+    
+    empresas[empresa_id] = empresa.dict()
+    guardar_empresas(empresas)
+    return empresa
+
+@app.delete("/api/empresas/{empresa_id}")
+async def eliminar_empresa(empresa_id: str):
+    empresas = cargar_empresas()
+    if empresa_id not in empresas:
+        raise HTTPException(status_code=404, detail="Empresa no encontrada")
+    
+    del empresas[empresa_id]
+    guardar_empresas(empresas)
+    return {"message": "Empresa eliminada"}
+
+@app.post("/api/chat")
+async def chat(message: ChatMessage):
+    try:
+        print(f"Recibiendo mensaje para empresa {message.empresa_id}: {message.message}")
+        
+        empresas = cargar_empresas()
+        if message.empresa_id not in empresas:
+            print(f"Empresa no encontrada: {message.empresa_id}")
+            raise HTTPException(status_code=404, detail="Empresa no encontrada")
+        
+        empresa = empresas[message.empresa_id]
+        print(f"Empresa encontrada: {empresa['nombre']}")
+        
+        # Leer el archivo de contexto específico de la empresa
+        context_file = f"context/empresas/{message.empresa_id}.txt"
+        system_message = ""
+        
+        try:
+            with open(context_file, 'r', encoding='utf-8') as f:
+                system_message = f.read()
+            print(f"Contexto cargado desde: {context_file}")
+        except FileNotFoundError:
+            print(f"Archivo de contexto no encontrado: {context_file}")
+            system_message = f"""Eres un asistente virtual especializado en proporcionar información sobre {empresa['nombre']}.
+            Debes responder las preguntas de manera amable y profesional.
+            Si no tienes información específica sobre algo, indícalo amablemente."""
+        
+        # Usar OpenAI para generar la respuesta
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": system_message},
+                {"role": "user", "content": message.message}
+            ]
+        )
+        
+        respuesta = response.choices[0].message.content
+        print(f"Respuesta generada: {respuesta}")
+        
+        return {
+            "response": respuesta,
+            "empresa": empresa['nombre']
+        }
+    except Exception as e:
+        print(f"Error en el chat: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/")
+async def root():
+    return {"message": "API de Chat funcionando correctamente"} 

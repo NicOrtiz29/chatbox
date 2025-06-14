@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prueba del Widget de Chat</title>
+</head>
+<body>
+    <h1>Página de Prueba</h1>
+    <p>Esta es una página de prueba para el widget de chat.</p>
+
+    <script>
+        window.ChatWidgetConfig = {
+            apiUrl: 'http://localhost:8000/api/chat',
+            theme: {
+                primaryColor: '#1976d2',
+                secondaryColor: '#f5f5f5'
+            }
+        };
+    </script>
+    <script src="http://localhost:3000/chat-widget.js" async></script>
+</body>
+</html> 

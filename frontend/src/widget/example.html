@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejemplo de Chat Widget</title>
+    <!-- Material UI -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <!-- React y ReactDOM -->
+    <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+    <!-- Material UI -->
+    <script src="https://unpkg.com/@mui/material@5.0.0/umd/material-ui.production.min.js"></script>
+    <!-- Axios -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <!-- Babel para JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+    <div id="chat-widget"></div>
+
+    <script type="text/babel">
+        // Configuración del widget
+        const config = {
+            empresaId: 'techsolutions', // ID de la empresa
+            apiUrl: 'http://127.0.0.1:8000', // URL del backend
+            title: 'TechSolutions Chat', // Título del chat
+            primaryColor: '#1976d2', // Color primario
+            secondaryColor: '#f5f5f5', // Color secundario
+            width: '350px', // Ancho del widget
+            height: '500px', // Alto del widget
+            placeholder: '¿En qué puedo ayudarte?' // Placeholder del input
+        };
+
+        // Renderizar el widget
+        ReactDOM.render(
+            <ChatWidget config={config} />,
+            document.getElementById('chat-widget')
+        );
+    </script>
+</body>
+</html> 

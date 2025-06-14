@@ -1,0 +1,22 @@
+{
+  "empresas": {
+    "techsolutions": {
+      "nombre": "TechSolutions S.A.",
+      "archivo": "techsolutions.txt",
+      "dominio": "techsolutions.com",
+      "activo": true
+    },
+    "ecosolutions": {
+      "nombre": "EcoSolutions S.A.",
+      "archivo": "empresa2.txt",
+      "dominio": "ecosolutions.com",
+      "activo": true
+    },
+    "eltrebol": {
+      "nombre": "El Trébol Tenis",
+      "archivo": "eltrebol.txt",
+      "dominio": "eltreboltenis.netlify.app",
+      "activo": true
+    }
+  }
+} 
