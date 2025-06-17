@@ -8,7 +8,7 @@ if (window.ChatWidgetConfig) {
 
 window.ChatWidgetConfig = {
     // URL base del backend
-    apiUrl: 'http://localhost:8000',
+    apiUrl: 'https://chatbox-backend.fly.dev',
     
     // Configuración específica para Sgarbi
     defaultConfig: {
