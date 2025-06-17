@@ -1,7 +1,7 @@
 // Configuración global del widget
 window.ChatWidgetConfig = {
   // URL base del backend
-  apiUrl: 'http://127.0.0.1:8000/api/chat',
+  apiUrl: 'https://chatbox-backend.onrender.com/api/chat',
   
   // Configuración por defecto
   defaultConfig: {
