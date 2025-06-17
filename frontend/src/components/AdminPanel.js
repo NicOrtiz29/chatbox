@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 
 // URL base del backend
-const API_URL = 'https://chatbox-backend-production.up.railway.app';
+const API_URL = 'https://chatbox-backend.onrender.com';
 
 const AdminPanel = () => {
   const [empresas, setEmpresas] = useState({});

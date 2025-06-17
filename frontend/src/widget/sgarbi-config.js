@@ -8,7 +8,7 @@ if (window.ChatWidgetConfig) {
 
 window.ChatWidgetConfig = {
     // URL base del backend
-    apiUrl: 'https://chatbox-backend-production.up.railway.app',
+    apiUrl: 'https://chatbox-backend.onrender.com',
     
     // Configuración específica para Sgarbi
     defaultConfig: {
