@@ -122,4 +122,4 @@ window.ChatWidgetConfig = {
 - Panel de administración
 - Temas personalizables para el widget
 - Soporte para múltiples idiomas
-- Integración con sistemas de tickets 
+- Integración con sistemas de tickets
