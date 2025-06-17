@@ -12,11 +12,7 @@ import {
   TableRow,
   Button,
   TextField,
-  Grid,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem
+  Grid
 } from '@mui/material';
 
 const AdminPanel = () => {
