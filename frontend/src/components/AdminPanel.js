@@ -15,6 +15,9 @@ import {
   Grid
 } from '@mui/material';
 
+// URL base del backend
+const API_URL = 'https://chatbox-backend.onrender.com';
+
 const AdminPanel = () => {
   const [empresas, setEmpresas] = useState({});
   const [nuevaEmpresa, setNuevaEmpresa] = useState({
@@ -39,7 +42,7 @@ const AdminPanel = () => {
 
   const cargarEmpresas = async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/empresas');
+      const response = await axios.get(`${API_URL}/api/empresas`);
       setEmpresas(response.data);
     } catch (error) {
       console.error('Error al cargar empresas:', error);
@@ -49,7 +52,7 @@ const AdminPanel = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://127.0.0.1:8000/api/empresas', nuevaEmpresa);
+      await axios.post(`${API_URL}/api/empresas`, nuevaEmpresa);
       cargarEmpresas();
       setNuevaEmpresa({
         nombre: '',
@@ -73,7 +76,7 @@ const AdminPanel = () => {
 
   const eliminarEmpresa = async (empresaId) => {
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/empresas/${empresaId}`);
+      await axios.delete(`${API_URL}/api/empresas/${empresaId}`);
       cargarEmpresas();
     } catch (error) {
       console.error('Error al eliminar empresa:', error);
