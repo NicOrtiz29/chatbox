@@ -27,20 +27,27 @@ if (!fs.existsSync(destDir)) {
   }
 }
 
-// Archivos a copiar
-const filesToCopy = [
+// Archivos a copiar (los archivos requeridos primero)
+const requiredFiles = [
   'sgarbi-config.js',
-  'eltrebol-config.js',
+  'eltrebol-config.js'
+];
+
+const optionalFiles = [
   'nuevacliente-config.js'
 ];
 
+const filesToCopy = [...requiredFiles, ...optionalFiles];
+
 let successCount = 0;
 let errorCount = 0;
+let skippedCount = 0;
 
 // Copiar cada archivo
 filesToCopy.forEach(file => {
   const srcPath = path.join(srcDir, file);
   const destPath = path.join(destDir, file);
+  const isRequired = requiredFiles.includes(file);
   
   console.log(`\nProcesando archivo: ${file}`);
   console.log('Ruta fuente:', srcPath);
@@ -68,8 +75,13 @@ filesToCopy.forEach(file => {
       errorCount++;
     }
   } else {
-    console.error(`❌ Archivo no encontrado: ${file}`);
-    errorCount++;
+    if (isRequired) {
+      console.error(`❌ Error: Archivo requerido no encontrado: ${file}`);
+      errorCount++;
+    } else {
+      console.log(`⚠️ Archivo opcional no encontrado: ${file}`);
+      skippedCount++;
+    }
   }
 });
 
@@ -92,9 +104,14 @@ try {
 // Resumen final
 console.log('\nResumen de la operación:');
 console.log(`✅ Archivos copiados exitosamente: ${successCount}`);
+console.log(`⚠️ Archivos opcionales omitidos: ${skippedCount}`);
 console.log(`❌ Errores: ${errorCount}`);
 
-// Salir con código de error si hubo problemas
+// Solo salir con error si fallaron archivos requeridos
 if (errorCount > 0) {
+  console.error('\n❌ El build falló porque no se pudieron copiar archivos requeridos');
   process.exit(1);
+} else {
+  console.log('\n✅ Build completado exitosamente');
+  process.exit(0);
 } 
