@@ -54,7 +54,7 @@ class ChatMessage(BaseModel):
     empresa_id: str
 
 # Archivo para almacenar las empresas
-EMPRESAS_FILE = "empresas.json"
+EMPRESAS_FILE = os.path.join(os.path.dirname(__file__), "empresas.json")
 
 def cargar_empresas() -> Dict:
     if os.path.exists(EMPRESAS_FILE):
@@ -115,7 +115,7 @@ async def chat(message: ChatMessage):
         print(f"Empresa encontrada: {empresa['nombre']}")
         
         # Leer el archivo de contexto específico de la empresa
-        context_file = f"context/empresas/{message.empresa_id}.txt"
+        context_file = os.path.join(os.path.dirname(__file__), "context", "empresas", f"{message.empresa_id}.txt")
         system_message = ""
         
         try:
