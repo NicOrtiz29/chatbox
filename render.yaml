@@ -5,9 +5,8 @@ services:
     rootDir: backend
     buildCommand: |
       python -m pip install --upgrade pip
-      pip install -r ../requirements.txt
-      cp ../requirements.txt .
-    startCommand: cd backend && python -m uvicorn main:app --host 0.0.0.0 --port $PORT
+      pip install -r requirements.txt
+    startCommand: python -m uvicorn main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: OPENAI_API_KEY
         sync: false
