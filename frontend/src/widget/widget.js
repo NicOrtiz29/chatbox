@@ -1,5 +1,8 @@
 // Widget de Chat
+console.log('Iniciando carga del widget.js...');
+
 const ChatWidget = ({ config }) => {
+    console.log('Configuración recibida:', config);
     const [isOpen, setIsOpen] = React.useState(false);
     const [messages, setMessages] = React.useState([]);
     const [input, setInput] = React.useState('');
@@ -11,6 +14,7 @@ const ChatWidget = ({ config }) => {
     };
 
     React.useEffect(() => {
+        console.log('Widget montado, config:', config);
         scrollToBottom();
     }, [messages]);
 
@@ -23,17 +27,19 @@ const ChatWidget = ({ config }) => {
         setIsLoading(true);
 
         try {
+            console.log('Enviando mensaje a:', `${config.apiUrl}/api/chat`);
             const response = await axios.post(`${config.apiUrl}/api/chat`, {
                 message: userMessage,
                 empresa_id: config.empresaId
             });
 
+            console.log('Respuesta recibida:', response.data);
             setMessages(prev => [...prev, { role: 'assistant', content: response.data.response }]);
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error al enviar mensaje:', error);
             setMessages(prev => [...prev, { 
                 role: 'assistant', 
-                content: 'Lo siento, hubo un error al procesar tu mensaje.'
+                content: 'Lo siento, hubo un error al procesar tu mensaje. Por favor, intenta nuevamente.'
             }]);
         } finally {
             setIsLoading(false);
@@ -52,7 +58,10 @@ const ChatWidget = ({ config }) => {
         }
     }, [
         React.createElement('button', {
-            onClick: () => setIsOpen(!isOpen),
+            onClick: () => {
+                console.log('Botón de chat clickeado, estado actual:', isOpen);
+                setIsOpen(!isOpen);
+            },
             style: {
                 backgroundColor: config.primaryColor,
                 color: 'white',
@@ -146,8 +155,36 @@ const ChatWidget = ({ config }) => {
                         padding: '8px 16px',
                         cursor: 'pointer'
                     }
-                }, 'Enviar')
+                }, isLoading ? 'Enviando...' : 'Enviar')
             ])
         ])
     ]);
-}; 
+};
+
+// Función para inicializar el widget
+window.initWidget = function() {
+    console.log('Inicializando widget...');
+    try {
+        if (!window.ChatWidgetConfig) {
+            throw new Error('Configuración no encontrada');
+        }
+        
+        const config = window.ChatWidgetConfig.defaultConfig;
+        console.log('Configuración del widget:', config);
+        
+        const container = document.getElementById('chat-widget');
+        if (!container) {
+            throw new Error('Contenedor del widget no encontrado');
+        }
+        
+        ReactDOM.render(
+            React.createElement(ChatWidget, { config }),
+            container
+        );
+        console.log('Widget renderizado exitosamente');
+    } catch (error) {
+        console.error('Error al inicializar el widget:', error);
+    }
+};
+
+console.log('Widget.js cargado correctamente'); 
