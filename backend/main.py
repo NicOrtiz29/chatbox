@@ -19,6 +19,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"]
 )
 
 # Configurar OpenAI
@@ -57,49 +58,74 @@ class ChatMessage(BaseModel):
 EMPRESAS_FILE = os.path.join(os.path.dirname(__file__), "empresas.json")
 
 def cargar_empresas() -> Dict:
-    if os.path.exists(EMPRESAS_FILE):
-        with open(EMPRESAS_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return {}
+    try:
+        if os.path.exists(EMPRESAS_FILE):
+            with open(EMPRESAS_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        return {}
+    except Exception as e:
+        print(f"Error al cargar empresas: {str(e)}")
+        return {}
 
 def guardar_empresas(empresas: Dict):
-    with open(EMPRESAS_FILE, 'w', encoding='utf-8') as f:
-        json.dump(empresas, f, ensure_ascii=False, indent=2)
+    try:
+        with open(EMPRESAS_FILE, 'w', encoding='utf-8') as f:
+            json.dump(empresas, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"Error al guardar empresas: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error al guardar empresas")
 
 # Rutas de la API
 @app.get("/api/empresas")
 async def get_empresas():
-    return cargar_empresas()
+    try:
+        empresas = cargar_empresas()
+        return empresas
+    except Exception as e:
+        print(f"Error en get_empresas: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/empresas")
 async def crear_empresa(empresa: Empresa):
-    empresas = cargar_empresas()
-    if empresa.config.empresaId in empresas:
-        raise HTTPException(status_code=400, detail="La empresa ya existe")
-    
-    empresas[empresa.config.empresaId] = empresa.dict()
-    guardar_empresas(empresas)
-    return empresa
+    try:
+        empresas = cargar_empresas()
+        if empresa.config.empresaId in empresas:
+            raise HTTPException(status_code=400, detail="La empresa ya existe")
+        
+        empresas[empresa.config.empresaId] = empresa.dict()
+        guardar_empresas(empresas)
+        return empresa
+    except Exception as e:
+        print(f"Error en crear_empresa: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.put("/api/empresas/{empresa_id}")
 async def actualizar_empresa(empresa_id: str, empresa: Empresa):
-    empresas = cargar_empresas()
-    if empresa_id not in empresas:
-        raise HTTPException(status_code=404, detail="Empresa no encontrada")
-    
-    empresas[empresa_id] = empresa.dict()
-    guardar_empresas(empresas)
-    return empresa
+    try:
+        empresas = cargar_empresas()
+        if empresa_id not in empresas:
+            raise HTTPException(status_code=404, detail="Empresa no encontrada")
+        
+        empresas[empresa_id] = empresa.dict()
+        guardar_empresas(empresas)
+        return empresa
+    except Exception as e:
+        print(f"Error en actualizar_empresa: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.delete("/api/empresas/{empresa_id}")
 async def eliminar_empresa(empresa_id: str):
-    empresas = cargar_empresas()
-    if empresa_id not in empresas:
-        raise HTTPException(status_code=404, detail="Empresa no encontrada")
-    
-    del empresas[empresa_id]
-    guardar_empresas(empresas)
-    return {"message": "Empresa eliminada"}
+    try:
+        empresas = cargar_empresas()
+        if empresa_id not in empresas:
+            raise HTTPException(status_code=404, detail="Empresa no encontrada")
+        
+        del empresas[empresa_id]
+        guardar_empresas(empresas)
+        return {"message": "Empresa eliminada"}
+    except Exception as e:
+        print(f"Error en eliminar_empresa: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/chat")
 async def chat(message: ChatMessage):
