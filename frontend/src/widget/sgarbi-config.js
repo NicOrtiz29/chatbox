@@ -108,14 +108,30 @@ async function initChatWidget(config = {}) {
   }
 }
 
+// Función para verificar si el script se cargó correctamente
+function checkScriptLoaded() {
+  console.log('Verificando carga del script...');
+  if (window.ChatWidgetConfig) {
+    console.log('✅ Script de configuración cargado correctamente');
+    return true;
+  } else {
+    console.error('❌ Error: Script de configuración no cargado');
+    return false;
+  }
+}
+
 // Inicializar el widget cuando el DOM esté listo
 console.log('Script de configuración cargado');
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM cargado, iniciando widget...');
-    initChatWidget();
+    if (checkScriptLoaded()) {
+      initChatWidget();
+    }
   });
 } else {
   console.log('DOM ya cargado, iniciando widget...');
-  initChatWidget();
+  if (checkScriptLoaded()) {
+    initChatWidget();
+  }
 } 
