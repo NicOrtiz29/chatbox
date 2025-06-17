@@ -6,6 +6,12 @@ from openai import OpenAI
 import os
 import json
 from dotenv import load_dotenv
+import logging
+import datetime
+
+# Configurar logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Cargar variables de entorno
 load_dotenv()
@@ -25,9 +31,10 @@ app.add_middleware(
 # Configurar OpenAI
 api_key = os.getenv("OPENAI_API_KEY")
 if not api_key:
+    logger.error("No se encontró la API key de OpenAI")
     raise ValueError("No se encontró la API key de OpenAI. Por favor, configura OPENAI_API_KEY en el archivo .env")
 
-# Inicializar el cliente OpenAI con la configuración correcta
+logger.info("Inicializando cliente OpenAI")
 client = OpenAI(
     api_key=api_key,
     base_url="https://api.openai.com/v1"
@@ -176,4 +183,26 @@ async def chat(message: ChatMessage):
 
 @app.get("/")
 async def root():
-    return {"message": "API de Chat funcionando correctamente"} 
+    logger.info("Verificación de salud del servidor")
+    return {
+        "status": "ok",
+        "message": "API de Chat funcionando correctamente",
+        "version": "1.0.0"
+    }
+
+@app.get("/health")
+async def health_check():
+    logger.info("Verificación de salud detallada")
+    try:
+        # Verificar acceso a OpenAI
+        client.models.list()
+        openai_status = "ok"
+    except Exception as e:
+        logger.error(f"Error al verificar OpenAI: {str(e)}")
+        openai_status = "error"
+
+    return {
+        "status": "ok",
+        "openai": openai_status,
+        "timestamp": datetime.datetime.now().isoformat()
+    } 
