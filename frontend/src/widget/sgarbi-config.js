@@ -23,8 +23,14 @@ function loadScript(src) {
     const script = document.createElement('script');
     script.src = src;
     script.async = true;
-    script.onload = resolve;
-    script.onerror = reject;
+    script.onload = () => {
+      console.log(`Script cargado: ${src}`);
+      resolve();
+    };
+    script.onerror = (error) => {
+      console.error(`Error al cargar script ${src}:`, error);
+      reject(error);
+    };
     document.head.appendChild(script);
   });
 }
@@ -41,22 +47,27 @@ function loadStyles() {
     link.rel = 'stylesheet';
     link.href = href;
     document.head.appendChild(link);
+    console.log(`Estilo cargado: ${href}`);
   });
 }
 
 // Función para inicializar el widget
 async function initChatWidget(config = {}) {
   try {
+    console.log('Iniciando carga del widget...');
+    
     // Cargar estilos
     loadStyles();
 
     // Cargar dependencias
+    console.log('Cargando dependencias...');
     await Promise.all([
       loadScript('https://unpkg.com/react@17/umd/react.production.min.js'),
       loadScript('https://unpkg.com/react-dom@17/umd/react-dom.production.min.js'),
       loadScript('https://unpkg.com/@mui/material@5.0.0/umd/material-ui.production.min.js'),
       loadScript('https://unpkg.com/axios/dist/axios.min.js')
     ]);
+    console.log('Dependencias cargadas');
 
     // Combinar la configuración por defecto con la personalizada
     const finalConfig = {
@@ -64,22 +75,32 @@ async function initChatWidget(config = {}) {
       ...config
     };
 
-    // Crear el script del widget
-    const script = document.createElement('script');
-    script.src = 'https://chatbox-frontend.netlify.app/static/js/widget.js';
-    script.async = true;
-    
-    // Agregar la configuración al objeto global
-    window.ChatWidgetConfig = {
-      ...window.ChatWidgetConfig,
-      ...finalConfig
-    };
-
     // Crear contenedor para el widget
     const container = document.createElement('div');
     container.id = 'chat-widget';
     document.body.appendChild(container);
+    console.log('Contenedor del widget creado');
 
+    // Crear el script del widget
+    const script = document.createElement('script');
+    script.src = 'https://chatbox-frontend.netlify.app/static/js/widget.js';
+    script.async = true;
+    script.onload = () => {
+      console.log('Widget cargado correctamente');
+      // Agregar la configuración al objeto global
+      window.ChatWidgetConfig = {
+        ...window.ChatWidgetConfig,
+        ...finalConfig
+      };
+      // Inicializar el widget
+      if (window.initWidget) {
+        window.initWidget();
+      }
+    };
+    script.onerror = (error) => {
+      console.error('Error al cargar el widget:', error);
+    };
+    
     // Agregar el script al documento
     document.body.appendChild(script);
   } catch (error) {
@@ -88,8 +109,13 @@ async function initChatWidget(config = {}) {
 }
 
 // Inicializar el widget cuando el DOM esté listo
+console.log('Script de configuración cargado');
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => initChatWidget());
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM cargado, iniciando widget...');
+    initChatWidget();
+  });
 } else {
+  console.log('DOM ya cargado, iniciando widget...');
   initChatWidget();
 } 
