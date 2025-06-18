@@ -1,4 +1,9 @@
 [[redirects]]
+  from = "/chat-widget.js"
+  to = "/chat-widget.js"
+  status = 200
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200 
