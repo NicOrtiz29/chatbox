@@ -3,7 +3,7 @@
     const config = {
         apiUrl: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
             ? 'http://127.0.0.1:8000/api/chat'
-            : 'https://tu-backend-url.com/api/chat'
+            : 'https://chatbox-0r1r.onrender.com/api/chat'
     };
 
     // Función para detectar elementos flotantes

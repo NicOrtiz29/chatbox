@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Configurar el widget
   window.ChatWidgetConfig = {
-    apiUrl: 'http://127.0.0.1:8000/api/chat',
+    apiUrl: 'https://chatbox-0r1r.onrender.com/api/chat',
     defaultConfig: empresa.config
   };
 

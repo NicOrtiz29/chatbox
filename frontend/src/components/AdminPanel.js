@@ -15,8 +15,8 @@ import {
   Grid
 } from '@mui/material';
 
-// URL base del backend
-const API_URL = 'https://chatbox-backend.fly.dev';
+// Importar configuración centralizada de la API
+import API_CONFIG from '../config/api';
 
 const AdminPanel = () => {
   const [empresas, setEmpresas] = useState({});
@@ -42,7 +42,7 @@ const AdminPanel = () => {
 
   const cargarEmpresas = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/empresas`);
+      const response = await axios.get(API_CONFIG.EMPRESAS_URL);
       setEmpresas(response.data);
     } catch (error) {
       console.error('Error al cargar empresas:', error);
@@ -52,7 +52,7 @@ const AdminPanel = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${API_URL}/api/empresas`, nuevaEmpresa);
+      await axios.post(API_CONFIG.EMPRESAS_URL, nuevaEmpresa);
       cargarEmpresas();
       setNuevaEmpresa({
         nombre: '',
@@ -76,7 +76,7 @@ const AdminPanel = () => {
 
   const eliminarEmpresa = async (empresaId) => {
     try {
-      await axios.delete(`${API_URL}/api/empresas/${empresaId}`);
+      await axios.delete(`${API_CONFIG.EMPRESAS_URL}/${empresaId}`);
       cargarEmpresas();
     } catch (error) {
       console.error('Error al eliminar empresa:', error);

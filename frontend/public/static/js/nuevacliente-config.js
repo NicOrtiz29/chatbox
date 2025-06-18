@@ -1,7 +1,7 @@
 // Configuración específica para Nueva Empresa
 window.ChatWidgetConfig = {
   // URL base del backend
-  apiUrl: 'http://127.0.0.1:8000/api/chat',
+  apiUrl: 'https://chatbox-0r1r.onrender.com/api/chat',
   
   // Configuración específica para Nueva Empresa
   defaultConfig: {

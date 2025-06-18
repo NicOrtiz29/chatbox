@@ -1,7 +1,7 @@
 // Configuración específica para El Trébol Tenis
 window.ChatWidgetConfig = {
     empresaId: 'eltrebol',
-    apiUrl: 'http://127.0.0.1:8000', // Cambiar a tu URL de producción cuando esté lista
+    apiUrl: 'https://chatbox-0r1r.onrender.com/api/chat', // URL de producción en Render
     title: 'El Trébol Tenis',
     primaryColor: '#2E7D32', // Verde característico del trébol
     secondaryColor: '#E8F5E9', // Verde claro para los mensajes

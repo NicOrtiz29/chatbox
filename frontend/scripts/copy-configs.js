@@ -133,4 +133,6 @@ if (errorCount > 0) {
 } else {
     console.log('\n✅ Build completado exitosamente');
     process.exit(0);
-} 
+}
+
+const API_URL = 'https://chatbox-0r1r.onrender.com'; 

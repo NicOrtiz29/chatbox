@@ -2,7 +2,7 @@
 (function() {
     // Configuración por defecto
     const defaultConfig = {
-        apiUrl: 'https://api.tuchat.com', // URL de tu API en producción
+        apiUrl: 'https://chatbox-0r1r.onrender.com/api/chat', // URL de tu API en producción
         position: 'bottom-right',
         width: '350px',
         height: '500px',
