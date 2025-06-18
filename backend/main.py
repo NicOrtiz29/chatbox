@@ -209,4 +209,6 @@ async def health_check():
         "status": "ok",
         "openai": openai_status,
         "timestamp": datetime.datetime.now().isoformat()
-    } 
+    }
+
+# Forzar redeploy en Render 
