@@ -32,13 +32,19 @@
     const empresasUrl = apiBase + '/api/empresas/' + empresaId;
 
     // 3. Obtener configuración de la empresa desde el backend
+    console.log('[ChatWidget] Buscando empresa:', empresaId);
     fetch(apiBase + '/api/empresas')
         .then(res => res.json())
         .then(empresas => {
+            console.log('[ChatWidget] Empresas recibidas:', empresas);
+            console.log('[ChatWidget] Keys disponibles:', Object.keys(empresas));
+            console.log('[ChatWidget] Buscando empresa con ID:', empresaId);
             const empresa = empresas[empresaId];
+            console.log('[ChatWidget] Empresa encontrada:', empresa);
             if (!empresa) {
                 throw new Error('No se encontró la configuración para la empresa: ' + empresaId);
             }
+            console.log('[ChatWidget] Configuración de empresa:', empresa.config);
             renderChatWidget(empresa.config);
         })
         .catch(err => {
