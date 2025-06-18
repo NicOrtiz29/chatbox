@@ -8,6 +8,7 @@ import json
 from dotenv import load_dotenv
 import logging
 import datetime
+from fastapi.staticfiles import StaticFiles
 
 # Configurar logging
 logging.basicConfig(level=logging.INFO)
@@ -17,6 +18,9 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 app = FastAPI()
+
+# Montar archivos estáticos
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Configurar CORS
 app.add_middleware(
