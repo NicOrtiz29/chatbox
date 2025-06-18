@@ -65,7 +65,7 @@
         chatButton.style.borderRadius = '50%';
         chatButton.style.width = '60px';
         chatButton.style.height = '60px';
-        chatButton.style.fontSize = '24px';
+        chatButton.style.fontSize = '12px';
         chatButton.style.display = 'flex';
         chatButton.style.justifyContent = 'center';
         chatButton.style.alignItems = 'center';
