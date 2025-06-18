@@ -25,9 +25,7 @@
     }
 
     // 2. Configuración de la URL del backend
-    const apiBase = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-        ? 'http://127.0.0.1:8000'
-        : 'https://chatbox-0r1r.onrender.com';
+    const apiBase = 'https://chatbox-0r1r.onrender.com';  // Siempre usar Render
     const apiUrl = apiBase + '/api/chat';
     const empresasUrl = apiBase + '/api/empresas/' + empresaId;
 
