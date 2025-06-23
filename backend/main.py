@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional, Dict
@@ -210,5 +210,45 @@ async def health_check():
         "openai": openai_status,
         "timestamp": datetime.datetime.now().isoformat()
     }
+
+@app.post("/webhook")
+async def webhook(request: Request):
+    data = await request.json()
+    source = data.get("source", "chat")  # 'wpp' para WhatsApp, 'chat' para chat box
+    numero = data.get("from")
+    mensaje = data.get("body")
+    empresa_id = data.get("empresa_id")
+
+    if source == "wpp":
+        # Lógica para WhatsApp (Evolution API)
+        # Aquí puedes personalizar la respuesta, o usar lógica de archivos por número
+        respuesta = f"¡Hola! Recibimos tu mensaje por WhatsApp: {mensaje}"
+        return {"respuesta": respuesta, "origen": "wpp"}
+    else:
+        # Lógica para chat box (usa contexto de empresa y OpenAI)
+        if not empresa_id:
+            raise HTTPException(status_code=400, detail="Falta el campo empresa_id para mensajes de chat box")
+        empresas = cargar_empresas()
+        if empresa_id not in empresas:
+            raise HTTPException(status_code=404, detail="Empresa no encontrada")
+        empresa = empresas[empresa_id]
+        context_file = os.path.join(os.path.dirname(__file__), "context", "empresas", f"{empresa_id}.txt")
+        system_message = ""
+        try:
+            with open(context_file, 'r', encoding='utf-8') as f:
+                system_message = f.read()
+        except FileNotFoundError:
+            system_message = f"""Eres un asistente virtual especializado en proporcionar información sobre {empresa['nombre']}.
+            Debes responder las preguntas de manera amable y profesional.
+            Si no tienes información específica sobre algo, indícalo amablemente."""
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": system_message},
+                {"role": "user", "content": mensaje}
+            ]
+        )
+        respuesta = response.choices[0].message.content
+        return {"respuesta": respuesta, "origen": "chat"}
 
 # Forzar redeploy en Render 
