@@ -211,44 +211,29 @@ async def health_check():
         "timestamp": datetime.datetime.now().isoformat()
     }
 
+RUTA_CLIENTES = r"C:/proyectos/wpp-bot/clientes"
+
 @app.post("/webhook")
 async def webhook(request: Request):
     data = await request.json()
-    source = data.get("source", "chat")  # 'wpp' para WhatsApp, 'chat' para chat box
-    numero = data.get("from")
-    mensaje = data.get("body")
-    empresa_id = data.get("empresa_id")
+    print("Datos recibidos en webhook:", data)
 
-    if source == "wpp":
-        # Lógica para WhatsApp (Evolution API)
-        # Aquí puedes personalizar la respuesta, o usar lógica de archivos por número
-        respuesta = f"¡Hola! Recibimos tu mensaje por WhatsApp: {mensaje}"
-        return {"respuesta": respuesta, "origen": "wpp"}
-    else:
-        # Lógica para chat box (usa contexto de empresa y OpenAI)
-        if not empresa_id:
-            raise HTTPException(status_code=400, detail="Falta el campo empresa_id para mensajes de chat box")
-        empresas = cargar_empresas()
-        if empresa_id not in empresas:
-            raise HTTPException(status_code=404, detail="Empresa no encontrada")
-        empresa = empresas[empresa_id]
-        context_file = os.path.join(os.path.dirname(__file__), "context", "empresas", f"{empresa_id}.txt")
-        system_message = ""
-        try:
-            with open(context_file, 'r', encoding='utf-8') as f:
-                system_message = f.read()
-        except FileNotFoundError:
-            system_message = f"""Eres un asistente virtual especializado en proporcionar información sobre {empresa['nombre']}.
-            Debes responder las preguntas de manera amable y profesional.
-            Si no tienes información específica sobre algo, indícalo amablemente."""
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": system_message},
-                {"role": "user", "content": mensaje}
-            ]
-        )
-        respuesta = response.choices[0].message.content
-        return {"respuesta": respuesta, "origen": "chat"}
+    numero = data.get("from")
+    mensaje = data.get("body", "")
+
+    # Si no hay mensaje, responde con un error simple
+    if not mensaje:
+        return {"respuesta": "No se recibió ningún mensaje."}
+
+    # Si hay número y existe un archivo TXT para ese número, responde con el contenido
+    if numero:
+        archivo_cliente = os.path.join(RUTA_CLIENTES, f"{numero}.txt")
+        if os.path.exists(archivo_cliente):
+            with open(archivo_cliente, "r", encoding="utf-8") as f:
+                respuesta = f.read()
+            return {"respuesta": respuesta}
+
+    # Si no hay archivo para el número, responde genérico
+    return {"respuesta": f"¡Hola! Recibimos tu mensaje: {mensaje}"}
 
 # Forzar redeploy en Render 
