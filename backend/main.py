@@ -239,8 +239,8 @@ async def webhook(request: Request):
 
 # Forzar redeploy en Render 
 
-EVOLUTION_API_URL = "https://evolutionchat.onrender.com"  # Nueva URL pública en Render
-EVOLUTION_API_KEY = "TU_API_KEY"  # Reemplaza por tu API Key real
+EVOLUTION_API_URL = "https://evolutionchat.onrender.com"  # URL pública en Render
+EVOLUTION_API_KEY = os.getenv("EVOLUTION_API_KEY", "")  # Ahora se toma de la variable de entorno
 INSTANCE_NAME = "primera-instancia"  # El nombre de tu instancia
 
 async def enviar_mensaje_wpp(numero, mensaje):
