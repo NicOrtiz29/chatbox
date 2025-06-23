@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 import logging
 import datetime
 from fastapi.staticfiles import StaticFiles
+import httpx
 
 # Configurar logging
 logging.basicConfig(level=logging.INFO)
@@ -237,3 +238,18 @@ async def webhook(request: Request):
     return {"respuesta": f"¡Hola! Recibimos tu mensaje: {mensaje}"}
 
 # Forzar redeploy en Render 
+
+EVOLUTION_API_URL = "https://evolutionchat.onrender.com"  # Nueva URL pública en Render
+EVOLUTION_API_KEY = "TU_API_KEY"  # Reemplaza por tu API Key real
+INSTANCE_NAME = "primera-instancia"  # El nombre de tu instancia
+
+async def enviar_mensaje_wpp(numero, mensaje):
+    url = f"{EVOLUTION_API_URL}/message/sendText/{INSTANCE_NAME}"
+    headers = {"apikey": EVOLUTION_API_KEY}
+    payload = {
+        "to": numero,
+        "message": mensaje
+    }
+    async with httpx.AsyncClient() as client:
+        r = await client.post(url, json=payload, headers=headers)
+        print("Respuesta de Evolution API:", r.text) 
